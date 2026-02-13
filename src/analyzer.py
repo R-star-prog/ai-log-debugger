@@ -20,7 +20,7 @@ class LogAnalyzer:
     ):
         """
         Initialize LogAnalyzer
-        
+
         Args:
             config_path: Path to configuration file
             openai_api_key: OpenAI API key for AI analysis
@@ -37,10 +37,10 @@ class LogAnalyzer:
     def analyze_file(self, file_path: str) -> Dict[str, Any]:
         """
         Complete analysis workflow for a log file
-        
+
         Args:
             file_path: Path to log file
-            
+
         Returns:
             Complete analysis report
         """
@@ -73,17 +73,17 @@ class LogAnalyzer:
         logs = logs or self.logs
         if not logs:
             return {}
-        
+
         from collections import Counter
-        
+
         # Get message patterns
         messages = [log.message for log in logs]
         message_counter = Counter(messages)
-        
+
         # Get error patterns
         errors = [log.message for log in logs if log.level in ["ERROR", "CRITICAL"]]
         error_counter = Counter(errors)
-        
+
         return {
             "top_messages": message_counter.most_common(10),
             "top_errors": error_counter.most_common(5),
@@ -91,7 +91,9 @@ class LogAnalyzer:
             "error_count": len(errors),
         }
 
-    def detect_anomalies(self, logs: Optional[List[LogEntry]] = None) -> List[Dict[str, Any]]:
+    def detect_anomalies(
+        self, logs: Optional[List[LogEntry]] = None
+    ) -> List[Dict[str, Any]]:
         """Detect anomalies in logs"""
         logs = logs or self.logs
         self.anomalies = self.anomaly_detector.detect_anomalies(logs)
@@ -105,7 +107,7 @@ class LogAnalyzer:
                 "message": "No anomalies detected",
                 "insights": [],
             }
-        
+
         return self.ai_engine.analyze_and_suggest(self.anomalies)
 
     def generate_report(
@@ -115,11 +117,11 @@ class LogAnalyzer:
     ) -> Any:
         """
         Generate final report
-        
+
         Args:
             file_path: Optional file path for output
             output_format: Format for report ('dict', 'json', 'html')
-            
+
         Returns:
             Report in specified format
         """
@@ -164,19 +166,19 @@ class LogAnalyzer:
     def _generate_recommendations(self) -> List[str]:
         """Generate action recommendations"""
         recommendations = []
-        
+
         error_rate = self.metrics.get("error_rate", 0)
         if error_rate > 10:
             recommendations.append(
                 f"High error rate ({error_rate:.1f}%). Investigate root causes immediately."
             )
-        
+
         anomaly_count = len(self.anomalies)
         if anomaly_count > 5:
             recommendations.append(
                 f"Multiple anomalies detected ({anomaly_count}). Review system health."
             )
-        
+
         top_errors = self.metrics.get("top_errors", [])
         if top_errors:
             top_error_msg, count = top_errors[0]
@@ -184,8 +186,8 @@ class LogAnalyzer:
                 f"Most common error: '{top_error_msg}' (appears {count} times). "
                 "Consider implementing a fix or monitor closely."
             )
-        
+
         if not recommendations:
             recommendations.append("System appears to be running normally.")
-        
+
         return recommendations

@@ -132,16 +132,16 @@ class Reporter:
                 <th>Count</th>
             </tr>
 """
-        
+
         for level, count in metrics.get("level_distribution", {}).items():
             html += f"<tr><td>{level}</td><td>{count}</td></tr>"
-        
+
         html += f"""
         </table>
 
         <h2>Detected Anomalies</h2>
 """
-        
+
         if anomalies:
             for anomaly in anomalies:
                 severity = anomaly.get("severity", "low")
@@ -153,7 +153,7 @@ class Reporter:
 """
         else:
             html += "<p>No anomalies detected.</p>"
-        
+
         html += """
     </div>
 </body>
@@ -164,14 +164,14 @@ class Reporter:
     def save_report(self, report: Any, file_path: str, format: str = "json") -> None:
         """
         Save report to file
-        
+
         Args:
             report: Report data
             file_path: Path to save report
             format: Format to save in ('json' or 'html')
         """
         try:
-            with open(file_path, 'w', encoding='utf-8') as f:
+            with open(file_path, "w", encoding="utf-8") as f:
                 if format == "json":
                     if isinstance(report, str):
                         f.write(report)
@@ -181,7 +181,7 @@ class Reporter:
                     f.write(report)
                 else:
                     raise ValueError(f"Unknown format: {format}")
-            
+
             print(f"Report saved to {file_path}")
         except Exception as e:
             print(f"Error saving report: {e}")

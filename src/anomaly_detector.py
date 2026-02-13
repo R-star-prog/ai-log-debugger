@@ -15,7 +15,7 @@ class AnomalyDetector:
     def __init__(self, threshold: float = 2.0):
         """
         Initialize anomaly detector
-        
+
         Args:
             threshold: Standard deviation threshold for flagging anomalies
         """
@@ -25,10 +25,10 @@ class AnomalyDetector:
     def extract_metrics(self, entries: List[LogEntry]) -> Dict[str, Any]:
         """
         Extract statistical metrics from log entries
-        
+
         Args:
             entries: List of LogEntry objects
-            
+
         Returns:
             Dictionary with extracted metrics
         """
@@ -50,10 +50,10 @@ class AnomalyDetector:
     def detect_anomalies(self, entries: List[LogEntry]) -> List[Dict[str, Any]]:
         """
         Detect anomalies in log entries
-        
+
         Args:
             entries: List of LogEntry objects
-            
+
         Returns:
             List of detected anomalies with details
         """
@@ -82,10 +82,9 @@ class AnomalyDetector:
         """Calculate percentage of error/warning logs"""
         if not entries:
             return 0.0
-        
+
         error_count = sum(
-            1 for e in entries 
-            if e.level in ["ERROR", "CRITICAL", "WARNING"]
+            1 for e in entries if e.level in ["ERROR", "CRITICAL", "WARNING"]
         )
         return (error_count / len(entries)) * 100
 
@@ -93,7 +92,7 @@ class AnomalyDetector:
         """Get statistics on message lengths"""
         if not entries:
             return {}
-        
+
         lengths = [len(e.message) for e in entries]
         return {
             "mean": float(np.mean(lengths)),
@@ -110,10 +109,12 @@ class AnomalyDetector:
             curr_time = entries[i].timestamp
             gap = (curr_time - prev_time).total_seconds()
             gaps.append(gap)
-        
+
         return gaps
 
-    def _get_top_errors(self, entries: List[LogEntry], top_n: int = 5) -> List[Tuple[str, int]]:
+    def _get_top_errors(
+        self, entries: List[LogEntry], top_n: int = 5
+    ) -> List[Tuple[str, int]]:
         """Get most common error messages"""
         error_entries = [e for e in entries if e.level in ["ERROR", "CRITICAL"]]
         error_counter = Counter(e.message for e in error_entries)
@@ -122,11 +123,13 @@ class AnomalyDetector:
     def _detect_error_spikes(self, entries: List[LogEntry]) -> List[Dict[str, Any]]:
         """Detect sudden increases in error frequency"""
         anomalies = []
-        
+
         # Split entries into chunks of 100
         chunk_size = max(10, len(entries) // 10)
-        chunks = [entries[i:i + chunk_size] for i in range(0, len(entries), chunk_size)]
-        
+        chunks = [
+            entries[i : i + chunk_size] for i in range(0, len(entries), chunk_size)
+        ]
+
         error_rates = []
         for chunk in chunks:
             error_count = sum(1 for e in chunk if e.level in ["ERROR", "CRITICAL"])
@@ -137,48 +140,58 @@ class AnomalyDetector:
         if len(error_rates) > 1:
             mean_rate = np.mean(error_rates)
             std_rate = np.std(error_rates)
-            
+
             for i, rate in enumerate(error_rates):
                 if rate > mean_rate + (self.threshold * std_rate):
                     chunk = chunks[i]
-                    anomalies.append({
-                        "type": "error_spike",
-                        "severity": "high" if rate > mean_rate + (2 * std_rate) else "medium",
-                        "description": f"Error spike detected: {rate:.1f}% error rate (baseline: {mean_rate:.1f}%)",
-                        "chunk_start": chunk[0].timestamp if chunk else None,
-                        "chunk_end": chunk[-1].timestamp if chunk else None,
-                        "affected_entries": len(chunk),
-                    })
+                    anomalies.append(
+                        {
+                            "type": "error_spike",
+                            "severity": (
+                                "high"
+                                if rate > mean_rate + (2 * std_rate)
+                                else "medium"
+                            ),
+                            "description": f"Error spike detected: {rate:.1f}% error rate (baseline: {mean_rate:.1f}%)",
+                            "chunk_start": chunk[0].timestamp if chunk else None,
+                            "chunk_end": chunk[-1].timestamp if chunk else None,
+                            "affected_entries": len(chunk),
+                        }
+                    )
 
         return anomalies
 
-    def _detect_pattern_anomalies(self, entries: List[LogEntry]) -> List[Dict[str, Any]]:
+    def _detect_pattern_anomalies(
+        self, entries: List[LogEntry]
+    ) -> List[Dict[str, Any]]:
         """Detect unusual patterns in messages"""
         anomalies = []
-        
+
         message_counter = Counter(e.message for e in entries)
         total_entries = len(entries)
-        
+
         # Find messages that appear very frequently or very rarely
         for message, count in message_counter.most_common(20):
             percentage = (count / total_entries) * 100
-            
+
             # Flag messages appearing in >30% of logs or very rare
             if percentage > 30 or (count == 1 and total_entries > 100):
-                anomalies.append({
-                    "type": "pattern_anomaly",
-                    "severity": "high" if percentage > 50 else "medium",
-                    "message": message[:100],
-                    "occurrence_count": count,
-                    "percentage": percentage,
-                })
+                anomalies.append(
+                    {
+                        "type": "pattern_anomaly",
+                        "severity": "high" if percentage > 50 else "medium",
+                        "message": message[:100],
+                        "occurrence_count": count,
+                        "percentage": percentage,
+                    }
+                )
 
         return anomalies
 
     def _detect_timing_anomalies(self, entries: List[LogEntry]) -> List[Dict[str, Any]]:
         """Detect unusual timing patterns"""
         anomalies = []
-        
+
         gaps = self._calculate_time_gaps(entries)
         if not gaps:
             return anomalies
@@ -186,16 +199,18 @@ class AnomalyDetector:
         gaps = np.array(gaps)
         mean_gap = np.mean(gaps)
         std_gap = np.std(gaps)
-        
+
         # Find unusually large gaps
         for i, gap in enumerate(gaps):
             if gap > mean_gap + (self.threshold * std_gap):
-                anomalies.append({
-                    "type": "timing_anomaly",
-                    "severity": "medium",
-                    "description": f"Unusual gap between logs: {gap:.2f}s (baseline: {mean_gap:.2f}s)",
-                    "gap_duration": gap,
-                    "entry_index": i,
-                })
+                anomalies.append(
+                    {
+                        "type": "timing_anomaly",
+                        "severity": "medium",
+                        "description": f"Unusual gap between logs: {gap:.2f}s (baseline: {mean_gap:.2f}s)",
+                        "gap_duration": gap,
+                        "entry_index": i,
+                    }
+                )
 
         return anomalies

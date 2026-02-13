@@ -12,6 +12,7 @@ from dataclasses import dataclass, field
 @dataclass
 class LogEntry:
     """Represents a single log entry"""
+
     timestamp: datetime
     level: str  # DEBUG, INFO, WARNING, ERROR, CRITICAL
     message: str
@@ -53,16 +54,16 @@ class LogParser:
     def parse_file(self, file_path: str) -> List[LogEntry]:
         """
         Parse a log file and return list of LogEntry objects
-        
+
         Args:
             file_path: Path to the log file
-            
+
         Returns:
             List of parsed LogEntry objects
         """
         entries = []
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 for line in f:
                     line = line.strip()
                     if line:
@@ -72,16 +73,16 @@ class LogParser:
         except Exception as e:
             print(f"Error reading file {file_path}: {e}")
             return entries
-        
+
         return entries
 
     def parse_line(self, line: str) -> Optional[LogEntry]:
         """
         Parse a single log line
-        
+
         Args:
             line: Single log line
-            
+
         Returns:
             LogEntry object or None if parsing fails
         """
@@ -155,17 +156,17 @@ class LogParser:
         message = re.sub(self.PATTERNS["iso8601"], "", message)
         message = re.sub(self.PATTERNS["standard"], "", message)
         message = re.sub(self.PATTERNS["level"], "", message)
-        
+
         # Clean up extra whitespace and brackets
         message = re.sub(r"^\s*[\[\-:]*\s*", "", message)
         message = message.strip()
-        
+
         return message[:500]  # Limit message length
 
     def _extract_metadata(self, line: str) -> Dict[str, Any]:
         """Extract metadata from log line"""
         metadata = {}
-        
+
         # Extract common fields
         # IP addresses
         ip_pattern = r"(?:\d{1,3}\.){3}\d{1,3}"

@@ -17,7 +17,7 @@ class AIEngine:
     def __init__(self, api_key: Optional[str] = None, model: str = "gpt-3.5-turbo"):
         """
         Initialize AI engine
-        
+
         Args:
             api_key: OpenAI API key (if None, loads from .env)
             model: Model to use for analysis
@@ -25,10 +25,11 @@ class AIEngine:
         self.api_key = api_key or os.getenv("OPENAI_API_KEY", "")
         self.model = model
         self.client = None
-        
+
         if self.api_key:
             try:
                 import openai
+
                 openai.api_key = self.api_key
             except ImportError:
                 print("Warning: openai package not installed. Using fallback mode.")
@@ -36,10 +37,10 @@ class AIEngine:
     def analyze_and_suggest(self, anomalies: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
         Analyze anomalies and provide suggestions
-        
+
         Args:
             anomalies: List of detected anomalies
-            
+
         Returns:
             Dictionary with AI-generated suggestions
         """
@@ -59,10 +60,10 @@ class AIEngine:
     def get_root_cause_analysis(self, error_logs: List[str]) -> Dict[str, Any]:
         """
         Generate root cause analysis for error logs
-        
+
         Args:
             error_logs: List of error log strings
-            
+
         Returns:
             Root cause analysis with recommendations
         """
@@ -78,10 +79,10 @@ class AIEngine:
         """Use OpenAI to analyze anomalies"""
         try:
             import openai
-            
+
             # Prepare anomaly summary for analysis
             anomaly_text = self._format_anomalies(anomalies)
-            
+
             response = openai.ChatCompletion.create(
                 model=self.model,
                 messages=[
@@ -97,9 +98,9 @@ class AIEngine:
                 max_tokens=500,
                 temperature=0.3,
             )
-            
+
             suggestion = response.choices[0].message.content
-            
+
             return {
                 "status": "success",
                 "method": "openai",
@@ -113,19 +114,19 @@ class AIEngine:
     def _ai_analysis_heuristic(self, anomalies: List[Dict[str, Any]]) -> Dict[str, Any]:
         """Fallback heuristic-based analysis without OpenAI"""
         suggestions = []
-        
+
         for anomaly in anomalies:
             anomaly_type = anomaly.get("type", "unknown")
             severity = anomaly.get("severity", "low")
-            
+
             if anomaly_type == "error_spike":
                 suggestion = self._suggest_error_spike_fix(anomaly, severity)
                 suggestions.append(suggestion)
-            
+
             elif anomaly_type == "pattern_anomaly":
                 suggestion = self._suggest_pattern_fix(anomaly, severity)
                 suggestions.append(suggestion)
-            
+
             elif anomaly_type == "timing_anomaly":
                 suggestion = self._suggest_timing_fix(anomaly, severity)
                 suggestions.append(suggestion)
@@ -141,9 +142,9 @@ class AIEngine:
         """Use OpenAI to determine root causes"""
         try:
             import openai
-            
+
             logs_text = "\n".join(error_logs[:10])  # Limit to first 10 logs
-            
+
             response = openai.ChatCompletion.create(
                 model=self.model,
                 messages=[
@@ -159,9 +160,9 @@ class AIEngine:
                 max_tokens=400,
                 temperature=0.3,
             )
-            
+
             analysis = response.choices[0].message.content
-            
+
             return {
                 "status": "success",
                 "method": "openai",
@@ -176,30 +177,30 @@ class AIEngine:
         """Fallback heuristic root cause analysis"""
         causes = []
         recommendations = []
-        
+
         error_text = " ".join(error_logs).lower()
-        
+
         # Check for common error patterns
         if any(word in error_text for word in ["connection", "timeout", "refused"]):
             causes.append("Network connectivity or service availability issue")
             recommendations.append("Check network connectivity and service status")
-        
+
         if any(word in error_text for word in ["memory", "out of memory", "heap"]):
             causes.append("Memory exhaustion or memory leak")
             recommendations.append("Increase heap size or investigate memory leak")
-        
+
         if any(word in error_text for word in ["permission", "denied", "unauthorized"]):
             causes.append("Authentication or authorization failure")
             recommendations.append("Check user credentials and permissions")
-        
+
         if any(word in error_text for word in ["database", "sql", "query"]):
             causes.append("Database query or connection issue")
             recommendations.append("Check database connectivity and query syntax")
-        
+
         if not causes:
             causes.append("Requires detailed investigation")
             recommendations.append("Review full error stack trace and logs")
-        
+
         return {
             "status": "success",
             "method": "heuristic",

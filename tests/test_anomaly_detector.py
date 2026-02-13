@@ -31,7 +31,7 @@ class TestAnomalyDetector(unittest.TestCase):
         """Test metrics extraction"""
         entries = self._create_log_entries(10)
         metrics = self.detector.extract_metrics(entries)
-        
+
         self.assertEqual(metrics["total_entries"], 10)
         self.assertIn("level_distribution", metrics)
         self.assertIn("error_rate", metrics)
@@ -41,26 +41,30 @@ class TestAnomalyDetector(unittest.TestCase):
         # Create logs with a clear spike in errors
         entries = []
         base_time = datetime.now()
-        
+
         # Many normal logs (few errors)
         for i in range(200):
-            entries.append(LogEntry(
-                timestamp=base_time + timedelta(seconds=i),
-                level="INFO" if i % 20 != 0 else "ERROR",
-                message=f"Normal message {i}",
-            ))
-        
+            entries.append(
+                LogEntry(
+                    timestamp=base_time + timedelta(seconds=i),
+                    level="INFO" if i % 20 != 0 else "ERROR",
+                    message=f"Normal message {i}",
+                )
+            )
+
         # Heavy error spike
         for i in range(100):
-            entries.append(LogEntry(
-                timestamp=base_time + timedelta(seconds=200 + i),
-                level="ERROR",
-                message=f"Error message {i}",
-            ))
-        
+            entries.append(
+                LogEntry(
+                    timestamp=base_time + timedelta(seconds=200 + i),
+                    level="ERROR",
+                    message=f"Error message {i}",
+                )
+            )
+
         anomalies = self.detector.detect_anomalies(entries)
         spike_anomalies = [a for a in anomalies if a["type"] == "error_spike"]
-        
+
         # We should detect some anomalies (timing or patterns if not spikes)
         self.assertGreater(len(anomalies), 0)
 
@@ -70,9 +74,9 @@ class TestAnomalyDetector(unittest.TestCase):
         entries.extend(self._create_log_entries(10, "INFO"))
         entries.extend(self._create_log_entries(5, "ERROR"))
         entries.extend(self._create_log_entries(3, "WARNING"))
-        
+
         distribution = self.detector._get_level_distribution(entries)
-        
+
         self.assertEqual(distribution["INFO"], 10)
         self.assertEqual(distribution["ERROR"], 5)
         self.assertEqual(distribution["WARNING"], 3)
