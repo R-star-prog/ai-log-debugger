@@ -1,0 +1,138 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Log Analysis Report - 2026-02-13T10:04:37.834349</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .metric-card {
+            background-color: #f9f9f9;
+            border-left: 4px solid #4CAF50;
+            padding: 15px;
+            border-radius: 3px;
+        }
+        .anomaly {
+            background-color: #fff3cd;
+            border-left: 4px solid #ff9800;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 3px;
+        }
+        .severity-high {
+            border-left-color: #f44336;
+        }
+        .severity-medium {
+            border-left-color: #ff9800;
+        }
+        .severity-low {
+            border-left-color: #4CAF50;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Log Analysis Report</h1>
+        <p><strong>Generated:</strong> 2026-02-13T10:04:37.834349</p>
+        
+        <h2>Metrics Summary</h2>
+        <div class="metric-grid">
+            <div class="metric-card">
+                <h3>Total Entries</h3>
+                <p>53</p>
+            </div>
+            <div class="metric-card">
+                <h3>Error Rate</h3>
+                <p>26.4%</p>
+            </div>
+            <div class="metric-card">
+                <h3>Unique Messages</h3>
+                <p>53</p>
+            </div>
+            <div class="metric-card">
+                <h3>Anomalies Detected</h3>
+                <p>7</p>
+            </div>
+        </div>
+
+        <h2>Log Level Distribution</h2>
+        <table>
+            <tr>
+                <th>Level</th>
+                <th>Count</th>
+            </tr>
+<tr><td>INFO</td><td>34</td></tr><tr><td>DEBUG</td><td>5</td></tr><tr><td>WARNING</td><td>3</td></tr><tr><td>ERROR</td><td>5</td></tr><tr><td>CRITICAL</td><td>6</td></tr>
+        </table>
+
+        <h2>Detected Anomalies</h2>
+
+        <div class="anomaly severity-high">
+            <strong>error_spike</strong> (Severity: high)<br>
+            Error spike detected: 70.0% error rate (baseline: 18.3%)
+        </div>
+
+        <div class="anomaly severity-medium">
+            <strong>timing_anomaly</strong> (Severity: medium)<br>
+            Unusual gap between logs: 55.00s (baseline: 9.33s)
+        </div>
+
+        <div class="anomaly severity-medium">
+            <strong>timing_anomaly</strong> (Severity: medium)<br>
+            Unusual gap between logs: 56.00s (baseline: 9.33s)
+        </div>
+
+        <div class="anomaly severity-medium">
+            <strong>timing_anomaly</strong> (Severity: medium)<br>
+            Unusual gap between logs: 53.00s (baseline: 9.33s)
+        </div>
+
+        <div class="anomaly severity-medium">
+            <strong>timing_anomaly</strong> (Severity: medium)<br>
+            Unusual gap between logs: 58.00s (baseline: 9.33s)
+        </div>
+
+        <div class="anomaly severity-medium">
+            <strong>timing_anomaly</strong> (Severity: medium)<br>
+            Unusual gap between logs: 56.00s (baseline: 9.33s)
+        </div>
+
+        <div class="anomaly severity-medium">
+            <strong>timing_anomaly</strong> (Severity: medium)<br>
+            Unusual gap between logs: 58.00s (baseline: 9.33s)
+        </div>
+
+    </div>
+</body>
+</html>

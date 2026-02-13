@@ -1,0 +1,34 @@
+# AI-Powered Log Debugging Assistant Configuration
+
+# Log format type: standard, syslog, json, custom
+log_format: standard
+
+# Anomaly detection threshold (standard deviations from mean)
+anomaly_threshold: 2.0
+
+# Error rate threshold (percentage)
+error_rate_threshold: 10.0
+
+# Chunk size for analysis (entries per chunk)
+chunk_size: 100
+
+# Report output format: json, html, both
+report_format: json
+
+# OpenAI Configuration
+openai:
+  enabled: true
+  model: gpt-3.5-turbo
+  max_tokens: 500
+  temperature: 0.3
+
+# Detection settings
+detection:
+  error_spike_enabled: true
+  pattern_anomaly_enabled: true
+  timing_anomaly_enabled: true
+
+# Logging
+logging:
+  level: INFO
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
